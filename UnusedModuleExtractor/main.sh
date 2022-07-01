@@ -17,9 +17,10 @@
 #     tmp.sh <directory-path> [options]
 #
 # Options:
-#     -d, --double: using double quotes
-#     -s, --single: using single quotes
+#     -d, --double: using double quotes           TODO: implement
+#     -s, --single: using single quotes           TODO: implement
 #     -o, --output <file-name>: output to file    TODO: implement
+
 
 
 # Use single or double quotes, depending on the situation
