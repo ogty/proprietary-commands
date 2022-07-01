@@ -120,7 +120,7 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
     fi
 
     targetFilePaths+=($fileNameWithoutExtension)
-    usingModuleName=$(awk -F "$delimiter" $moduleNameRetriver $fileAbsolutePath) # ----------------
+    usingModuleName=$(awk -F "$delimiter" $moduleNameRetriver $fileAbsolutePath)
     usingModulePaths+=($usingModuleName)
 done
 
