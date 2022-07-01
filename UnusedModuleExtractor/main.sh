@@ -144,9 +144,9 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
         if [[ $fileNameWithoutExtension == $unusedModulePath ]]; then
             if [ "$fileNameWithoutExtension" != "index" ]; then
                 echo $fileAbsolutePath >> $outputFileName
-            fi
-            if [ "$delete" = true ]; then
-                rm $fileAbsolutePath
+                if [ "$delete" = true ]; then
+                    rm $fileAbsolutePath
+                fi
             fi
         fi
     done
