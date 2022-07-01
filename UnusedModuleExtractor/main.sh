@@ -100,8 +100,6 @@ BEGIN {
 }
 '
 
-echo $moduleNameRetriver
-
 splitter='
 {
     split($1, arr, "/");
