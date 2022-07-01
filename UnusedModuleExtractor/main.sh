@@ -67,12 +67,12 @@ for fileAbsolutePath in `find $1 -type f`; do
     fi
 
     # Exclude file names with "index.<target extension>" as the file name.
-    if [ "$fileNameWithoutExtension" = "index" ]; then
-        continue
-    fi
+    # if [ "$fileNameWithoutExtension" = "index" ]; then
+    #     continue
+    # fi
 
     targetFilePaths+=($fileNameWithoutExtension)
-    usingModuleName=$(awk $moduleNameRetriver $fileAbsolutePath)
+    usingModuleName=$(awk -f main.awk $fileAbsolutePath)
     usingModulePaths+=($usingModuleName)
 done
 
@@ -96,7 +96,9 @@ for fileAbsolutePath in `find $1 -type f`; do
 
     for unusedModulePath in ${unusedModulePaths[@]}; do
         if [[ $fileNameWithoutExtension == $unusedModulePath ]]; then
-            echo $fileAbsolutePath >> unused.txt
+            if [ "$fileNameWithoutExtension" != "index" ]; then
+                echo $fileAbsolutePath >> unused.txt
+            fi
         fi
     done
 done
