@@ -14,12 +14,12 @@
 #         6. Output to file
 #
 # Usage:
-#     tmp.sh <directory-path> [options]
+#     tmp.sh [options] <directory-path>
 #
 # Options:
-#     -d, --double: using double quotes           TODO: implement
-#     -s, --single: using single quotes           TODO: implement
-#     -o, --output <file-name>: output to file    TODO: implement
+#     -d, --double: using double quotes
+#     -s, --single: using single quotes
+#     -o, --output <file-name>: output to file
 
 
 
@@ -28,10 +28,37 @@
 delimiter="'"
 # delimiter="\""
 
+outputFileName="unsed.txt" # default output file name
+
 usingModulePaths=()
 targetFilePaths=()
 unusedModulePaths=()
 targetExtensions=(".js" ".jsx" ".ts" ".tsx")
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -d|--double)
+            delimiter="\""
+            ;;
+        -s|--single)
+            delimiter="'"
+            ;;
+        -o|--output)
+            shift
+            outputFileName="$1"
+            ;;
+        *)
+            # if no option, assume it is the directory path
+            if [ -z "$directoryPath" ]; then
+                directoryPath="$1"
+            else
+                echo "Invalid option: $1"
+                exit 1
+            fi
+            ;;
+    esac
+    shift
+done
 
 # Note: To use double quotation marks, rewrite the code as follows
 #     moduleNameRetriver: 2
@@ -57,7 +84,7 @@ splitter='
 }
 '
 
-for fileAbsolutePath in `find $1 -type f`; do
+for fileAbsolutePath in `find $directoryPath -type f`; do
     fileName=$(echo $fileAbsolutePath | awk $splitter)
     fileExtension=${fileName##*.}
     fileNameWithoutExtension=${fileName%.*}
@@ -90,14 +117,14 @@ done
 unusedModulePaths=($(echo "${unusedModulePaths[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
 # Output absolute paths of unused modules to file
-for fileAbsolutePath in `find $1 -type f`; do
+for fileAbsolutePath in `find $directoryPath -type f`; do
     fileName=$(echo $fileAbsolutePath | awk $splitter)
     fileNameWithoutExtension=${fileName%.*}
 
     for unusedModulePath in ${unusedModulePaths[@]}; do
         if [[ $fileNameWithoutExtension == $unusedModulePath ]]; then
             if [ "$fileNameWithoutExtension" != "index" ]; then
-                echo $fileAbsolutePath >> unused.txt
+                echo $fileAbsolutePath >> $outputFileName
             fi
         fi
     done
