@@ -14,7 +14,7 @@
 #         6. Output to file
 #
 # Usage:
-#     main.sh [options] <directory-path>
+#     source main.sh [options] <directory-path>
 #
 # Options:
 #     -d, --double: using double quotes
@@ -23,7 +23,7 @@
 #     -D, --delete: delete the unused files
 #
 # Examples:
-#     tmp.sh -s -o output.txt ./src
+#     source main.sh -s -o output.txt ./src
 #
 # Warning:
 #     This command does not perfectly output unused files.
