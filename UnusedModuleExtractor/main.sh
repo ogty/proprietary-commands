@@ -20,15 +20,21 @@
 #     -d, --double: using double quotes
 #     -s, --single: using single quotes
 #     -o, --output <file-name>: output to file
+#     -D, --delete: delete the unused files
+#
+# Examples:
+#     tmp.sh -s -o output.txt ./src
+#
+# Warning:
+#     This command does not perfectly output unused files.
+#     The "-D, --delete" option should be avoided if possible.
+#     If you do use it, please use it only in an environment where you can revert deleted files.
 
 
 
 # Use single or double quotes, depending on the situation
-# Use single quotes by default
-delimiter="'"
-# delimiter="\""
-
-outputFileName="unsed.txt" # default output file name
+delimiter="'"               # Use single quotes by default
+outputFileName="unused.txt" # default output file name
 
 usingModulePaths=()
 targetFilePaths=()
@@ -47,6 +53,9 @@ while [ $# -gt 0 ]; do
             shift
             outputFileName="$1"
             ;;
+        -D|--delete)
+            delete=true
+            ;;
         *)
             # if no option, assume it is the directory path
             if [ -z "$directoryPath" ]; then
@@ -60,13 +69,28 @@ while [ $# -gt 0 ]; do
     shift
 done
 
+# Confirmation regarding delete option
+if [ "$delete" = true ]; then
+    echo "Are you sure you want to delete the unused files?"
+    echo "Type 'yes' to continue: "
+    read answer
+    if [ "$answer" != "yes" ]; then
+        echo "Aborting..."
+        exit 1
+    fi
+fi
+
 # Note: To use double quotation marks, rewrite the code as follows
 #     moduleNameRetriver: 2
 #     split($0, splited_line, "'$delimiter'");
 #     split($0, splited_line, "\'$delimiter'");
 moduleNameRetriver='
+BEGIN {
+    FS = "'$delimiter'";
+}
+
 /^import.+from/{
-    split($0, splited_line, "'$delimiter'");
+    split($0, splited_line, FS);
     module_path = splited_line[2];
 
     split(module_path, splited_module_path, "/");
@@ -75,6 +99,8 @@ moduleNameRetriver='
     print(splited_module_path[splited_module_path_length]);
 }
 '
+
+echo $moduleNameRetriver
 
 splitter='
 {
@@ -93,13 +119,8 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
         continue
     fi
 
-    # Exclude file names with "index.<target extension>" as the file name.
-    # if [ "$fileNameWithoutExtension" = "index" ]; then
-    #     continue
-    # fi
-
     targetFilePaths+=($fileNameWithoutExtension)
-    usingModuleName=$(awk -f main.awk $fileAbsolutePath)
+    usingModuleName=$(awk -F "$delimiter" $moduleNameRetriver $fileAbsolutePath) # ----------------
     usingModulePaths+=($usingModuleName)
 done
 
@@ -125,6 +146,9 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
         if [[ $fileNameWithoutExtension == $unusedModulePath ]]; then
             if [ "$fileNameWithoutExtension" != "index" ]; then
                 echo $fileAbsolutePath >> $outputFileName
+            fi
+            if [ "$delete" = true ]; then
+                rm $fileAbsolutePath
             fi
         fi
     done
