@@ -14,7 +14,7 @@
 #         6. Output to file
 #
 # Usage:
-#     tmp.sh [options] <directory-path>
+#     main.sh [options] <directory-path>
 #
 # Options:
 #     -d, --double: using double quotes
