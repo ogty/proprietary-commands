@@ -27,10 +27,14 @@
 #     1. source main.sh -s -o output.txt ./src
 #     2. source main.sh -s -o output.txt -e "index.js" ./src
 #
+# Note:
+#     Files specified with the "-e" option must be given with the file extension included.
+#
 # Warning:
 #     This command does not perfectly output unused files.
-#     The "-D, --delete" option should be avoided if possible.
+#     The "-D" option should be avoided if possible.
 #     If you do use it, please use it only in an environment where you can revert deleted files.
+#     Alternatively, please check the required files in advance and specify them with the "-e" option.
 
 
 # Use single or double quotes, depending on the situation
