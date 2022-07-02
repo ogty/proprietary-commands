@@ -20,16 +20,17 @@
 #     -d, --double: using double quotes
 #     -s, --single: using single quotes
 #     -o, --output <file-name>: output to file
+#     -e, --exclude '<file-name> ...': exclude the files
 #     -D, --delete: delete the unused files
 #
 # Examples:
-#     source main.sh -s -o output.txt ./src
+#     1. source main.sh -s -o output.txt ./src
+#     2. source main.sh -s -o output.txt -e "index.js" ./src
 #
 # Warning:
 #     This command does not perfectly output unused files.
 #     The "-D, --delete" option should be avoided if possible.
 #     If you do use it, please use it only in an environment where you can revert deleted files.
-
 
 
 # Use single or double quotes, depending on the situation
@@ -56,6 +57,10 @@ while [ $# -gt 0 ]; do
         -D|--delete)
             delete=true
             ;;
+        -e|--exclude)
+            shift
+            excludeFiles="$1"
+            ;;
         *)
             # if no option, assume it is the directory path
             if [ -z "$directoryPath" ]; then
@@ -68,6 +73,8 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
+
+excludeFiles=($excludeFiles)
 
 # Confirmation regarding delete option
 if [ "$delete" = true ]; then
@@ -113,12 +120,13 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
     fileExtension=${fileName##*.}
     fileNameWithoutExtension=${fileName%.*}
 
+    # If the file is not in the target extensions, skip it
     if ! [[ "${targetExtensions[@]}" =~ "$fileExtension" ]]; then
         continue
     fi
 
     targetFilePaths+=($fileNameWithoutExtension)
-    usingModuleName=$(awk -F "$delimiter" $moduleNameRetriver $fileAbsolutePath)
+    usingModuleName=$(awk $moduleNameRetriver $fileAbsolutePath)
     usingModulePaths+=($usingModuleName)
 done
 
@@ -140,6 +148,12 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
     fileName=$(echo $fileAbsolutePath | awk $splitter)
     fileNameWithoutExtension=${fileName%.*}
 
+    # If the file is in the excluded list, skip it
+    if [[ ${excludeFiles[@]} =~ $fileName ]]; then
+        continue
+    fi
+
+    # If the file is in the unused list, delete it
     for unusedModulePath in ${unusedModulePaths[@]}; do
         if [[ $fileNameWithoutExtension == $unusedModulePath ]]; then
             if [ "$fileNameWithoutExtension" != "index" ]; then
