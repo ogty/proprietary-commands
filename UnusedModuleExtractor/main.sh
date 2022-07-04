@@ -24,8 +24,8 @@
 #     -D, --delete: delete the unused files
 #
 # Examples:
-#     1. source main.sh -s -o output.txt ./src
-#     2. source main.sh -s -o output.txt -e "index.js" ./src
+#     $ source main.sh -s -o output.txt ./src
+#     $ source main.sh -s -o output.txt -e "index.js" ./src
 #
 # Note:
 #     Files specified with the "-e" option must be given with the file extension included.
