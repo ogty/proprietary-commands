@@ -27,15 +27,13 @@
 #     $ source main.sh -s -o output.txt ./src
 #     $ source main.sh -s -o output.txt -e "index.js" ./src
 #
-# Note:
-#     Files specified with the "-e" option must be given with the file extension included.
-#
 # Warning:
 #     This command does not perfectly output unused files.
-#     The "-D" option should be avoided if possible.
+#     The "-D, --delete" option should be avoided if possible.
 #     If you do use it, please use it only in an environment where you can revert deleted files.
-#     Alternatively, please check the required files in advance and specify them with the "-e" option.
 
+
+# Use single or double quotes, depending on the situation
 delimiter="'"               # Use single quotes by default
 outputFileName="unused.txt" # default output file name
 
@@ -89,6 +87,10 @@ if [ "$delete" = true ]; then
     fi
 fi
 
+# Note: To use double quotation marks, rewrite the code as follows
+#     moduleNameRetriver: 2
+#     split($0, splited_line, "'$delimiter'");
+#     split($0, splited_line, "\'$delimiter'");
 moduleNameRetriver='
 BEGIN {
     FS = "'$delimiter'";
