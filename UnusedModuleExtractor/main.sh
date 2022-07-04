@@ -116,7 +116,7 @@ splitter='
 '
 
 for fileAbsolutePath in `find $directoryPath -type f`; do
-    fileName=$(echo $fileAbsolutePath | awk $splitter)
+    fileName=$(echo $fileAbsolutePath | awk "$splitter")
     fileExtension=${fileName##*.}
     fileNameWithoutExtension=${fileName%.*}
 
@@ -126,7 +126,7 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
     fi
 
     targetFilePaths+=($fileNameWithoutExtension)
-    usingModuleName=$(awk $moduleNameRetriver $fileAbsolutePath)
+    usingModuleName=$(awk "$moduleNameRetriver" $fileAbsolutePath)
     usingModulePaths+=($usingModuleName)
 done
 
@@ -145,7 +145,7 @@ unusedModulePaths=($(echo "${unusedModulePaths[@]}" | tr ' ' '\n' | sort -u | tr
 
 # Output absolute paths of unused modules to file
 for fileAbsolutePath in `find $directoryPath -type f`; do
-    fileName=$(echo $fileAbsolutePath | awk $splitter)
+    fileName=$(echo $fileAbsolutePath | awk "$splitter")
     fileNameWithoutExtension=${fileName%.*}
 
     # If the file is in the excluded list, skip it
