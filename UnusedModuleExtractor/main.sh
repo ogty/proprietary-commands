@@ -32,6 +32,8 @@
 #     The "-D, --delete" option should be avoided if possible.
 #     If you do use it, please use it only in an environment where you can revert deleted files.
 
+NC="\033[0m"
+YELLOW="\033[1;33m"
 
 # Use single or double quotes, depending on the situation
 delimiter="'"               # Use single quotes by default
@@ -115,8 +117,15 @@ splitter='
 }
 '
 
-for fileAbsolutePath in `find $directoryPath -type f`; do
-    fileName=$(echo $fileAbsolutePath | awk "$splitter")
+replacer='
+{
+    result = gensub(before, after, "g", $0);
+    print(result);
+}
+'
+
+for filePath in `find $directoryPath -type f`; do
+    fileName=$(echo $filePath | awk "$splitter")
     fileExtension=${fileName##*.}
     fileNameWithoutExtension=${fileName%.*}
 
@@ -126,7 +135,7 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
     fi
 
     targetFilePaths+=($fileNameWithoutExtension)
-    usingModuleName=$(awk "$moduleNameRetriver" $fileAbsolutePath)
+    usingModuleName=$(awk "$moduleNameRetriver" $filePath)
     usingModulePaths+=($usingModuleName)
 done
 
@@ -144,8 +153,8 @@ done
 unusedModulePaths=($(echo "${unusedModulePaths[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
 # Output absolute paths of unused modules to file
-for fileAbsolutePath in `find $directoryPath -type f`; do
-    fileName=$(echo $fileAbsolutePath | awk "$splitter")
+for filePath in `find $directoryPath -type f`; do
+    fileName=$(echo $filePath | awk "$splitter")
     fileNameWithoutExtension=${fileName%.*}
 
     # If the file is in the excluded list, skip it
@@ -157,9 +166,14 @@ for fileAbsolutePath in `find $directoryPath -type f`; do
     for unusedModulePath in ${unusedModulePaths[@]}; do
         if [[ $fileNameWithoutExtension == $unusedModulePath ]]; then
             if [ "$fileNameWithoutExtension" != "index" ]; then
-                echo $fileAbsolutePath >> $outputFileName
+                coloredFileName="${YELLOW}$fileName${NC}"
+                coloredFilePath=$(echo "$filePath" | awk -v before=$fileName -v after=$coloredFileName "$replacer")
+
+                echo $coloredFilePath
+                echo $filePath >> $outputFileName
+
                 if [ "$delete" = true ]; then
-                    rm $fileAbsolutePath
+                    rm $filePath
                 fi
             fi
         fi
