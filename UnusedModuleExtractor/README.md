@@ -10,6 +10,7 @@ $ source main.sh [options] <directory-path>
 
 ```
 -d, --double: using double quotes
+-c, --confirm: Turn on confirmation to delete files
 -s, --single: using single quotes
 -o, --output <file-name>: output to file
 -e, --exclude '<file-name> ...': exclude the files
@@ -37,3 +38,11 @@ directoryPath: ./src
 delimiter: "
 outputFileName: output.txt
 ```
+
+## Tips
+
+Components used within unused components are recognized as used components.  
+Therefore, if you delete an unused component, when you run the command again,  
+the component that was used within the deleted component may appear as an unused component.  
+So, if you delete a component, it is recommended that you execute the command multiple times.  
+In that case, it is even better to add the `-c` option and delete files interactively.  
