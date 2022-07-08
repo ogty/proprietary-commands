@@ -18,6 +18,7 @@
 #
 # Options:
 #     -d, --double: using double quotes
+#     -c, --confirm: Turn on confirmation to delete files
 #     -s, --single: using single quotes
 #     -o, --output <file-name>: output to file
 #     -e, --exclude '<file-name> ...': exclude the files
@@ -48,6 +49,9 @@ while [ $# -gt 0 ]; do
     case "$1" in
         -d|--double)
             delimiter="\""
+            ;;
+        -c|--confirm)
+            confirm=true
             ;;
         -s|--single)
             delimiter="'"
@@ -173,7 +177,17 @@ for filePath in `find $directoryPath -type f`; do
                 echo $filePath >> $outputFileName
 
                 if [ "$delete" = true ]; then
-                    rm $filePath
+                    if [ "$confirm" = true ]; then
+                        clear
+                        echo "Are you sure you want to delete \n\n\t$coloredFilePath?\n"
+                        echo "Type 'yes' to continue: "
+                        read answer
+                        if [ "$answer" = "yes" ]; then
+                            rm $filePath
+                        fi
+                    else
+                        rm $filePath
+                    fi
                 fi
             fi
         fi
