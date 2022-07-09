@@ -18,8 +18,8 @@
 #
 # Options:
 #     -d, --double: using double quotes
-#     -c, --confirm: Turn on confirmation to delete files
 #     -s, --single: using single quotes
+#     -c, --confirm: Turn on confirmation to delete files
 #     -o, --output <file-name>: output to file
 #     -e, --exclude '<file-name> ...': exclude the files
 #     -D, --delete: delete the unused files
@@ -39,6 +39,7 @@ YELLOW="\033[1;33m"
 # Use single or double quotes, depending on the situation
 delimiter="'"               # Use single quotes by default
 outputFileName="unused.txt" # default output file name
+confirm=false               # default is not to confirm deletion
 
 usingModulePaths=()
 targetFilePaths=()
@@ -50,11 +51,11 @@ while [ $# -gt 0 ]; do
         -d|--double)
             delimiter="\""
             ;;
-        -c|--confirm)
-            confirm=true
-            ;;
         -s|--single)
             delimiter="'"
+            ;;
+        -c|--confirm)
+            confirm=true
             ;;
         -o|--output)
             shift
@@ -173,7 +174,7 @@ for filePath in `find $directoryPath -type f`; do
                 coloredFileName="${YELLOW}$fileName${NC}"
                 coloredFilePath=$(echo "$filePath" | awk -v before=$fileName -v after=$coloredFileName "$replacer")
 
-                echo $coloredFilePath
+                # echo $coloredFilePath # for debugging
                 echo $filePath >> $outputFileName
 
                 if [ "$delete" = true ]; then
